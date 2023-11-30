@@ -6,7 +6,7 @@ A simple 3D unity game, control the doll models using weapons to defeat other tr
 
 ## Introduction
 
-Create some narrative that lays the foundation for your coursework...
+A simple 3D unity game, control the doll models using weapons to defeat other troublesome dolls!
 
 ### Planning
 
