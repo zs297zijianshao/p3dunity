@@ -1,6 +1,6 @@
 # Report Template
 
-Below is a suggested template for your report.
+A simple 3D unity game, control the doll models using weapons to defeat other troublesome dolls!
 
 ---
 
