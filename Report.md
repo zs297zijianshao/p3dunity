@@ -18,22 +18,105 @@ A simple 3D unity game, control the doll models using weapons to defeat other tr
 
 ## Script
 
-e.g. _The script below is attached to the third-person controller. It will destroy any object tagged with 'otherTag' and which has a collider marked as a trigger_
+The script below is attached to the third-person controller.
 
 ```c#
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
-public class Destroyer : MonoBehaviour
+public class CharacteController : MonoBehaviour
 {
-    [SerializeField] private string otherTag;
 
-    private void OnTriggerEnter(Collider other)
+    //[Header("Health things")]
+    // Start is called before the first frame update
+    [Header("Player Script Cameras")]
+    public Transform playerCamera;
+
+    [Header("Player Movement")]
+    public float PlayerSpeed=1.9f;
+    public float playerSprint=3;
+    
+    [Header("Player Animator and Gravity")]
+    public CharacterController cC;
+    public float gravity = -9.81f;
+
+
+    [Header("Player Jumping and velocity")]
+    public float turnCalmTime=0.1f;
+    float turnCalmvelority;
+    Vector3 velocity;
+    public float jumpRange=1f;
+    public Transform surfaceCheck;
+    bool onSurface;
+    public float surfaceDistance = 0.4f;
+    public LayerMask surfaceMask;
+
+    void Start()
     {
-        if(other.gameObject.tag == otherTag )
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        onSurface=Physics.CheckSphere(surfaceCheck.position,surfaceDistance,surfaceMask);
+        if(onSurface&&velocity.y<0)
         {
-            Destroy(other.gameObject);
+            velocity.y=-2f;
+        }
+        //gravity
+        velocity.y +=gravity*Time.deltaTime;
+        cC.Move(velocity*Time.deltaTime);
+        PlayerMove();
+        Jump();
+        Sprint();
+    }
+
+    void PlayerMove()
+    {
+        float horizontal_axis = Input.GetAxisRaw("Horizontal");
+        float vertical_axis = Input.GetAxisRaw("Vertical");
+        Vector3 direction = new Vector3(horizontal_axis,0f, vertical_axis).normalized;
+        if(direction.magnitude>=0.1f)
+        {
+            float targetAngle = Mathf.Atan2(direction.x,direction.z)*Mathf.Rad2Deg+playerCamera.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y,targetAngle,ref turnCalmvelority,turnCalmTime);
+            transform.rotation=Quaternion.Euler(0f,angle,0f);
+
+            Vector3 moveDirection = Quaternion.Euler(0f,targetAngle,0f)*Vector3.forward;
+            cC.Move(moveDirection.normalized*PlayerSpeed*Time.deltaTime);
+        }
+    }
+
+    void Jump()
+    {
+        if(Input.GetButtonDown("Jump")&& onSurface)
+        {
+            velocity.y=Mathf.Sqrt(jumpRange*-2*gravity);
+        }
+    }
+
+        void Sprint()
+    {
+        if(Input.GetButton("Sprint")&& Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)&&onSurface)
+        {
+            float horizontal_axis = Input.GetAxisRaw("Horizontal");
+            float vertical_axis = Input.GetAxisRaw("Vertical");
+            Vector3 direction = new Vector3(horizontal_axis,0f, vertical_axis).normalized;
+            if(direction.magnitude>=0.1f)
+            {
+                float targetAngle = Mathf.Atan2(direction.x,direction.z)*Mathf.Rad2Deg+playerCamera.eulerAngles.y;
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y,targetAngle,ref turnCalmvelority,turnCalmTime);
+                transform.rotation=Quaternion.Euler(0f,angle,0f);
+                Vector3 moveDirection = Quaternion.Euler(0f,targetAngle,0f)*Vector3.forward;
+                cC.Move(moveDirection.normalized*playerSprint*Time.deltaTime);
+            }
         }
     }
 }
@@ -41,11 +124,14 @@ public class Destroyer : MonoBehaviour
 
 ## Implementation
 
-Describe the scene and the game you've built.
+This 3D shooting game is about: toys shooting each other and winning when the owner is not at home!
 
 ## A Research Element
 
-A properly referenced research section that describes what you've done that goes beyond the material taught in the labs.
+Toys 3D Models
+Toys 3D Action
+Sound Effects
+Furniture Decoration
 
 ## Summary
 
@@ -57,80 +143,18 @@ Describe how your coursework might evolve in the future...
 
 ## Appendix A
 
-A link to your GitHub repository.
+[A link to your GitHub repository.](https://github.com/zs297zijianshao/p3dunity/tree/main)
 
 ## Appendix B - Your Scripts
 
 _Destroyer.cs_:
 
 ```c#
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Destroyer : MonoBehaviour
-{
-    [SerializeField] private string otherTag;
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.gameObject.tag == otherTag )
-        {
-            Destroy(other.gameObject);
-        }
-    }
-}
 ```
 
 _SpawnObjects.cs_:
 
 ```c#
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
-public class SpawnObjects : MonoBehaviour
-{
-    [SerializeField] private GameObject mObject;
-    [SerializeField] private Transform spawnPoint;
-    [SerializeField] private int maxObjects;
-    private List<GameObject> mObjects;
-    private int numObjects;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        mObjects = new List<GameObject>();  
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (numObjects < maxObjects)
-        {
-            SpawnObject();
-            numObjects++;
-        } else {
-
-            for (int i = 0; i < mObjects.Count; i++)
-            {
-                if (mObjects[i] == null)
-                {
-                    mObjects.RemoveAt(i);
-                }
-            }
-        }        
-
-    }
-
-    void SpawnObject()
-    {
-        GameObject mObjectClone = Instantiate(mObject, spawnPoint.position, Quaternion.identity) as GameObject;
-        mObjectClone.SetActive(true);
-        mObjects.Add(mObjectClone);
-    }
-}
 ```
 
 ## Appendix C - Asset and Script References
