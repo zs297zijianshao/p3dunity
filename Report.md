@@ -6,11 +6,11 @@ A simple 3D unity game, control the doll models using weapons to defeat other tr
 
 ### Planning
 
-![project plan](./images/basicProjectPlan.png)
+![project plan](./20231130114308.png)
 
 ### Design
 
-![design](./images/A-UML-Class-Diagram-for-a-video-poker-game.png)
+![design](./)
 
 ## Script
 
