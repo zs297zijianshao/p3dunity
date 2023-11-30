@@ -1,12 +1,8 @@
-# Report Template
 
-A simple 3D unity game, control the doll models using weapons to defeat other troublesome dolls!
-
----
 
 ## Introduction
 
-A simple 3D unity game, control the doll models using weapons to defeat other troublesome dolls!
+A simple 3D unity game, control the doll models using weapons to defeat other troublesome toys!
 
 ### Planning
 
